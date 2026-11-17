@@ -1,11 +1,14 @@
 [Unit]
 Description=whoami-%i
 After=docker.service
+Requires=docker.service
 
 [Service]
 TimeoutStartSec=0
-ExecStartPre=-/usr/bin/docker kill whoami-%i
-ExecStartPre=-/usr/bin/docker rm whoami-%i
-ExecStartPre=/usr/bin/docker pull jwilder/whoami
-ExecStart=/usr/bin/docker run --name whoami-%i -p :8000 jwilder/whoami
+ExecStartPre=-/usr/bin/docker rm -f whoami-%i
+ExecStartPre=/usr/bin/docker pull ghcr.io/think-cube/whoami-id:2
+ExecStart=/usr/bin/docker run --rm --name whoami-%i --read-only --cap-drop ALL --security-opt no-new-privileges -p 8000 ghcr.io/think-cube/whoami-id:2
 ExecStop=/usr/bin/docker stop whoami-%i
+
+[Install]
+WantedBy=multi-user.target
